@@ -20,12 +20,12 @@ xmin = -2;
 xmax = 2;
 
 % Bounds - Control
-umin = -100;
-umax = 100;
+umin = -10;
+umax = 10;
 
 % Bounds - Path
 path_min = a;
-path_max = 100;
+path_max = 1;
 
 %-------------------------------------------------------------------%
 %------------------------ Bounds and Guess -------------------------%
@@ -56,12 +56,12 @@ bounds.phase.path.upper = path_max;
 
 % Integral
 bounds.phase.integral.lower = 0;
-bounds.phase.integral.upper = 5e5;
+bounds.phase.integral.upper = 50;
 
 
 %------------------------------ Guess ------------------------------%
 % Use spherical coordinate to guess position
-N = 10000;
+N = 1000;
 
 % Time
 guess.phase.time = linspace(t0, tf, N)';
@@ -117,5 +117,6 @@ J = solution.phase.integral;
 x1 = solution.phase.state(:, 1);
 x2 = solution.phase.state(:, 2);
 t = solution.phase.time;
+
 
 plot(t, x2, 'LineWidth', 1.5);
