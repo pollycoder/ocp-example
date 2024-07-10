@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------%
-% Equality Constraint: PMP                                          %
+% Inequality Constraint: PMP                                        %
 % Reference: Maurer's Lecture - Part 3                              %
 %-------------------------------------------------------------------%
 clc;clear
