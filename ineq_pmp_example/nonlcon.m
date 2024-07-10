@@ -1,8 +1,8 @@
 %-------------------------------------------------------------------%
 %---------------------- Nonlinear Constraint -----------------------%
 %-------------------------------------------------------------------%
-function [c, ceq] = nonlcon(X)
-a = -0.4;
+function [ceq] = nonlcon(X)
+a = -0.3;
 t0 = 0; tf = 4;
 x0 = [1; 1]; xf = [0; 0];
 dt1 = X(1); dt2 = X(2);
@@ -33,6 +33,12 @@ xf_solve = y2f(end, 1:2)';
 
 res = [xf_solve - xf; x2t1m - a; x2t2m - a; 
        lambda1m - lambda1p; lambda2m - lambda2p];
+x1 = [y01(:, 1); y12(:, 1); y2f(:, 1)];
 x2 = [y01(:, 2); y12(:, 2); y2f(:, 2)];
-ceq = res; c = a - min(x2);
+lambda1 = [y01(:, 3); y12(:, 3); y2f(:, 3)];
+lambda2 = [y01(:, 4); y12(:, 4); y2f(:, 4)];
+u = -lambda2./2;
+H = u.^2 + x1.^2 + x2.^2 + lambda1.*x2 + lambda2.*(-x1 + x2.*(ones(size(x1)) - x1.^2) + u);
+dH = diff(H);
+ceq = [res; norm(dH)]; c = [];
 end

@@ -6,43 +6,28 @@ clc;clear
 %-------------------------------------------------------------------%
 %------------- Guess: switch point and initial costate -------------%
 %-------------------------------------------------------------------%
-lambda0 = ones(2, 1);
-lambda1 = ones(2, 1);
-lambda2 = ones(2, 1);
-dt1 = 0.887; 
-dt2 = 1.733;
-x1t1 = 0.8;
-x1t2 = 0.2;
+lambda0 = [28.6193227741150; 10.4422400568376];
+lambda1 = [31.0886616237822; -2.03566438569542];
+lambda2 = [24.3163148662157; -0.704213576776701];
+dt1 = 0.411538306898497; 
+dt2 = 3.77274066575983 - 0.411538306898497;
+x1t1 = 1.05398863289202;
+x1t2 = 0.0374836455215355;
 X0 = [dt1; dt2; x1t1; x1t2; lambda0; lambda1; lambda2];
 
 
 %-------------------------------------------------------------------%
 %------------------------------ Solve ------------------------------%
 %-------------------------------------------------------------------%
-t0 = 0; tf = 4;
-x0 = [1; 1];
-tol = -1e-3;
-A = [-eye(2), zeros(2, 8);
-     ones(1, 2), zeros(1, 8)];
-b = [tol*ones(2, 1); tf-t0+tol];
-options = optimoptions("fmincon", ...
-                       "ConstraintTolerance", 1e-8, ...
-                       "FunctionTolerance", 1e-8, ...
-                       "MaxIterations", 1e3, ...
-                       "UseParallel",true, ...
-                       "MaxFunctionEvaluations", 1e6, ...
-                       "Algorithm", "sqp", ...
-                       "OptimalityTolerance", 1e-8, ...
-                       "StepTolerance", 1e-15, ...
-                       "Display", "iter");
-[X, J] = fmincon(@obj_func, X0, A, b, [],[],[],[], @nonlcon, options);
-
-[~,res] = nonlcon(X);
+options = optimoptions('fsolve', 'Algorithm', 'levenberg-marquardt');
+X = fsolve(@nonlcon, X0, options);
 
 %-------------------------------------------------------------------%
 %------------------------------ Plot -------------------------------%
 %-------------------------------------------------------------------%
-a = -0.4;
+a = -0.3;
+t0 = 0; tf = 4;
+x0 = [1; 1];
 dt1 = X(1); dt2 = X(2);
 t1 = t0 + dt1; t2 = t1 + dt2;
 x1t1 = X(3); x1t2 = X(4);
@@ -66,9 +51,15 @@ x1 = [y01(:, 1); y12(:, 1); y2f(:, 1)];
 x2 = [y01(:, 2); y12(:, 2); y2f(:, 2)];
 u = -[y01(:, 4); y12(:, 4); y2f(:, 4)]./2;
 t = [t01; t12; t2f];
+dJ = x1.^2 + x2.^2 + u.^2;
+J = trapz(t, dJ);
 
 figure
+plot(t, x1, 'LineWidth', 1.5);hold on
 plot(t, x2, 'LineWidth', 1.5);
+legend('x1', 'x2')
+title('State Trajectories')
 
 figure
 plot(t, u, 'LineWidth', 1.5);
+title('Control')
